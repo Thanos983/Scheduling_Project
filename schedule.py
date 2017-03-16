@@ -38,7 +38,7 @@ def open_file(file):
     return activities
 
 
-def can_activity_be_done(activities, path):
+def create_paths(activities, path):
     """
     Checks what activities can be done for a given path
     :param activities: Dictionary with the activities
@@ -49,21 +49,35 @@ def can_activity_be_done(activities, path):
 
     for key in activities.keys():
         can_be_done = 0
-        if key not in path:
+        if key not in path and key > path[-1]:
             for prereq in activities[key][1::]:
                 if prereq not in path:
                     can_be_done = 1
                     break
 
             if can_be_done == 0:
-                possible_paths.append(path+key)
+                new = path + key
+                possible_paths.append(new)
+
+    return possible_paths
 
 
 def main():
     file = 'test.txt'
-
     activities = open_file(file)
 
+    nodes = []
+    nodes.append(create_paths(activities, ' '))  # Insert the first activities
+    print(nodes)
 
+    for i in range(activities.__len__()):
+        new_paths = []
+        for paths in nodes[i]:
+            print(paths)
+            new_paths += create_paths(activities, paths)
+
+        nodes.append(new_paths)
+
+    print(nodes)
 if __name__ == '__main__':
     main()
