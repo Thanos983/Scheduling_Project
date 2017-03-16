@@ -1,20 +1,69 @@
-# Scheduling problem rewritten in Python
+# Title: Financial driven project scheduling: A dynamic programming approach
+#
+# Part A: Calculates all the possible paths
+# 		and stores them in a linked list
+# 		Input:A txt file with the names of the nodes and all the prerequicities
+# 		Output: All the possible paths
+#
+# 		The names of the activities in the input file should be one letter A-Z or a-z
+# 		This code supports maximum 52 activities.After that with sumbol : follows
+# 		the period time of the activity and afterwords follows all the prerequicities
+# 		of the given activity seperated by comma
+#
+# 		Example of the format given bellow:
+#
+# 			A:2/
+# 			B:1/A
+# 			C:1/A
+# 			D:3/B
+# 			a:2/A,B,D
+# 			b:2/A,B,a
 
-file = 'test.txt'
-activities = {}
 
-with open(file, 'r') as f:
-    for line in f:
-        line = line.split()
-        activities[line[0]] = line[1::]
+def open_file(file):
+    """
+    Accepts the name of the file
+    and returns a dictionary with the activities
+    input:
+        file:String
+    output:
+        activities: Dictionary
+    """
+    activities = {}
+    with open(file, 'r') as f:
+        for line in f:
+            line = line.split()
+            activities[line[0]] = line[1::]
+
+    return activities
 
 
 def can_activity_be_done(activities, path):
+    """
+    Checks what activities can be done for a given path
+    :param activities: Dictionary with the activities
+    :param path: the current path
+    :return: a list with all the possible paths for a given path
+    """
+    possible_paths = []
 
-    for a in activities.keys():
-        if a not in path:
-            for prereq in a[1::]:
+    for key in activities.keys():
+        can_be_done = 0
+        if key not in path:
+            for prereq in activities[key][1::]:
                 if prereq not in path:
-                    return False
+                    can_be_done = 1
+                    break
 
-            return True  # it can be done
+            if can_be_done == 0:
+                possible_paths.append(path+key)
+
+
+def main():
+    file = 'test.txt'
+
+    activities = open_file(file)
+
+
+if __name__ == '__main__':
+    main()
