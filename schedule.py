@@ -19,6 +19,7 @@
 # 			a:2/A,B,D
 # 			b:2/A,B,a
 
+from math import floor
 
 def open_file(file):
     """
@@ -68,12 +69,30 @@ def create_npv():
     cashflows_file = "cashflows.txt"
     cashflow = list()
 
+    # Read the file and save it to a list as integers
     with open(cashflows_file) as file:
         for line in file:
             cashflow.append(list(int(x) for x in line.split()))
 
-    print(cashflow)
+    discount_factor = 0.005
+    temporary_cash = list()
+    temp = list()
 
+    # for every column in list cashflow
+    for row in range(len(cashflow)):
+        temp = list()
+        for column in range(len(cashflow[row])):
+            summary = 0
+            for t in range(len(cashflow[row]) - column):
+                summary += cashflow[row][t] / (1+discount_factor)**(t+1)
+
+            summary *= 1/(discount_factor+1)**column
+            temp.append(floor(summary*10)/10)
+
+        temporary_cash.append(temp)
+
+        cashflow = temporary_cash
+        return cashflow
 
 
 def main():
