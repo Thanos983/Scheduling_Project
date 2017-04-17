@@ -62,22 +62,37 @@ def create_paths(activities, path):
     return possible_paths
 
 
+def create_npv():
+    """Creates the Net Present Value array based on cashflows.txt"""
+
+    cashflows_file = "cashflows.txt"
+    cashflow = list()
+
+    with open(cashflows_file) as file:
+        for line in file:
+            cashflow.append(list(int(x) for x in line.split()))
+
+    print(cashflow)
+
+
+
 def main():
+    # TODO: The code bellow could be modulized! (insert it on a function)
+
     file = 'test.txt'
     activities = open_file(file)
 
-    nodes = []
+    nodes = list()
     nodes.append(create_paths(activities, ' '))  # Insert the first activities
-    print(nodes)
 
-    for i in range(activities.__len__()):
+    for i in range(activities.__len__()-1):
         new_paths = []
         for paths in nodes[i]:
-            print(paths)
             new_paths += create_paths(activities, paths)
 
         nodes.append(new_paths)
 
-    print(nodes)
+    create_npv()
+
 if __name__ == '__main__':
     main()
