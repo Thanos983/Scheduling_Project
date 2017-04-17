@@ -21,6 +21,7 @@
 
 from math import floor
 
+
 def open_file(file):
     """
     Accepts the name of the file
@@ -36,6 +37,7 @@ def open_file(file):
             line = line.split()
             activities[line[0]] = line[1::]
 
+    print(activities)
     return activities
 
 
@@ -66,11 +68,11 @@ def create_paths(activities, path):
 def create_npv():
     """Creates the Net Present Value array based on cashflows.txt"""
 
-    cashflows_file = "cashflows.txt"
+    cashflow_file = "cashflows.txt"
     cashflow = list()
 
     # Read the file and save it to a list as integers
-    with open(cashflows_file) as file:
+    with open(cashflow_file) as file:
         for line in file:
             cashflow.append(list(int(x) for x in line.split()))
 
@@ -87,16 +89,25 @@ def create_npv():
                 summary += cashflow[row][t] / (1+discount_factor)**(t+1)
 
             summary *= 1/(discount_factor+1)**column
+            # TODO: there is a +-0.1 difference in expected values
             temp.append(floor(summary*10)/10)
 
         temporary_cash.append(temp)
 
-        cashflow = temporary_cash
-        return cashflow
+    return temporary_cash
+
+
+def can_be_undone(path, activities):
+
+    for activity in path:
+        temporary_path = path.replace(activity, '')
+        new_paths = create_paths(activities, temporary_path)
+
+        print(new_paths)
 
 
 def main():
-    # TODO: The code bellow could be modulized! (insert it on a function)
+    # TODO: The code bellow could be inserted in a function!
 
     file = 'test.txt'
     activities = open_file(file)
@@ -112,6 +123,8 @@ def main():
         nodes.append(new_paths)
 
     create_npv()
+    # print(nodes)
+    can_be_undone('ABCDEFG', activities=activities)
 
 if __name__ == '__main__':
     main()
