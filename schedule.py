@@ -123,8 +123,8 @@ def main():
         nodes.append(new_paths)
 
     create_npv()
-    # print(nodes)
-    can_be_undone('ABCDEFG', activities=activities)
+    print(nodes)
+    # can_be_undone('ABCDEFG', activities=activities)
 
 if __name__ == '__main__':
     main()
