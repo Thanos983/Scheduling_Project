@@ -41,30 +41,6 @@ def open_file(file):
     return activities
 
 
-def create_paths(activities, path):
-    """
-    Checks what activities can be done for a given path
-    :param activities: Dictionary with the activities
-    :param path: the current path
-    :return: a list with all the possible paths for a given path
-    """
-    possible_paths = []
-
-    for key in activities.keys():
-        can_be_done = 0
-        if key not in path and key > path[-1]:
-            for prereq in activities[key][1::]:
-                if prereq not in path:
-                    can_be_done = 1
-                    break
-
-            if can_be_done == 0:
-                new = path + key
-                possible_paths.append(new)
-
-    return possible_paths
-
-
 def create_npv():
     """Creates the Net Present Value array based on cashflows.txt"""
 
@@ -95,6 +71,30 @@ def create_npv():
         temporary_cash.append(temp)
 
     return temporary_cash
+
+
+def create_paths(activities, path):
+    """
+    Checks what activities can be done for a given path
+    :param activities: Dictionary with the activities
+    :param path: the current path
+    :return: a list with all the possible paths for a given path
+    """
+    possible_paths = []
+
+    for key in activities.keys():
+        can_be_done = 0
+        if key not in path and key > path[-1]:
+            for prereq in activities[key][1::]:
+                if prereq not in path:
+                    can_be_done = 1
+                    break
+
+            if can_be_done == 0:
+                new = path + key
+                possible_paths.append(new)
+
+    return possible_paths
 
 
 def can_be_undone(path, activities):
