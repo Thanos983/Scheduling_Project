@@ -37,7 +37,6 @@ def open_file(file):
             line = line.split()
             activities[line[0]] = line[1::]
 
-    print(activities)
     return activities
 
 
@@ -82,7 +81,7 @@ def create_paths(activities, path):
     """
     possible_paths = []
 
-    for key in activities.keys():
+    for key in sorted(activities.keys(), reverse=True):
         can_be_done = 0
         if key not in path and key > path[-1]:
             for prereq in activities[key][1::]:
@@ -91,7 +90,11 @@ def create_paths(activities, path):
                     break
 
             if can_be_done == 0:
-                new = path + key
+                if path.startswith(' '):
+                    new = key
+                else:
+                    new = path + key
+
                 possible_paths.append(new)
 
     return possible_paths
@@ -99,11 +102,21 @@ def create_paths(activities, path):
 
 def can_be_undone(path, activities):
 
-    for activity in path:
-        temporary_path = path.replace(activity, '')
-        new_paths = create_paths(activities, temporary_path)
+    possible_activities = []
 
-        print(new_paths)
+    for key in activities.keys():
+        if key not in path:
+            done = 0
+            #  for all prerequisites
+            for prereq in activities[key][1::]:
+                if prereq not in path:
+                    done = 1
+                    break
+
+            if done == 0:  # can be done
+                possible_activities.append(key)
+
+    return possible_activities
 
 
 def main():
@@ -124,7 +137,7 @@ def main():
 
     create_npv()
     print(nodes)
-    # can_be_undone('ABCDEFG', activities=activities)
+    print(can_be_undone('AC', activities=activities))
 
 if __name__ == '__main__':
     main()
