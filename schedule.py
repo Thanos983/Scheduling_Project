@@ -18,7 +18,6 @@
 # 			D:3/B
 # 			a:2/A,B,D
 # 			b:2/A,B,a
-
 from math import floor
 
 
@@ -100,7 +99,7 @@ def create_paths(activities, path):
     return possible_paths
 
 
-def can_be_undone(path, activities):
+def can_be_undone(activities, path):
 
     possible_activities = []
 
@@ -119,6 +118,25 @@ def can_be_undone(path, activities):
     return possible_activities
 
 
+def calculate_start_time(path, activities):
+    """ Finds the total period of a path to be constructed"""
+
+    start_time = 1
+    for activity in path:
+        if activity in activities.keys():
+            start_time += int(activities[activity][0])
+
+    return start_time - 1  # Minus one helps us use start time at arrays
+
+
+def find_best_solution(nodes, activities):
+
+    npv = create_npv()
+
+    for i in range(nodes.__len__(), 0, -1):
+        print(nodes[i-1])
+
+
 def main():
     # TODO: The code bellow could be inserted in a function!
 
@@ -135,9 +153,7 @@ def main():
 
         nodes.append(new_paths)
 
-    create_npv()
-    print(nodes)
-    print(can_be_undone('AC', activities=activities))
+    find_best_solution(nodes, activities)
 
 if __name__ == '__main__':
     main()
