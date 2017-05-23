@@ -19,6 +19,7 @@
 # 			a:2/A,B,D
 # 			b:2/A,B,a
 from math import floor
+import json
 
 
 def open_file(file):
@@ -121,47 +122,49 @@ def can_be_undone(activities, path):
 def calculate_start_time(path, activities):
     """ Finds the total period of a path to be constructed"""
 
-    start_time = 1
+    start_time = 0
     for activity in path:
         if activity in activities.keys():
             start_time += int(activities[activity][0])
 
-    return start_time - 1  # Minus one helps us use start time at arrays
+    return start_time
 
 
 def find_best_solution(nodes, activities):
 
     npv = create_npv()
-    npv_next_stages = {}
+    npv_next_stages = []
+
     state_out = ''
+    npv_dict = {}
 
     nodes.insert(0, [])
 
     # Beginning from the last node until the first
     for i in range(nodes.__len__()-1, -1, -1):
-
         for path in nodes[i]:
             possible_paths = can_be_undone(activities, path)
-            print(path, possible_paths)
+            # print(path, possible_paths)
 
             for letter in possible_paths:
                 state_out = ''.join(sorted(path + letter))
-                # print(state_out)
+                time = calculate_start_time(path, activities)
+                current_value = npv[ord(letter) - ord('A')][time]
 
                 # For each state out we check if exists and if has a greater value
-                if path in npv_next_stages.keys():
-                    time = calculate_start_time(state_out, activities)
-                    value = npv_next_stages[path][1] + npv[letter - 65][time]
+                if path in npv_dict.keys():
+                    value = npv_dict[state_out][5] + current_value
 
-                    if value > npv_next_stages[path][1]:
-                        npv_next_stages[path] = [state_out, value]
+                    if value > npv_dict[path][5]:
+                        npv_dict[path] = [letter, time, current_value, state_out, npv_dict[state_out][5], value]
 
                 else:
-                    time = calculate_start_time(state_out, activities)
-                    value = npv_next_stages[path][1] + npv[letter - 65][time]
-                    npv_next_stages[path] = [state_out, value]
+                    value = current_value
+                    npv_dict[path] = [letter, time, current_value, state_out, "No Previous Stage",  value]
 
-    print(npv_next_stages)
+        # npv_next_stages.append(npv_dict)
+
+    return npv_dict
 
 
 def main():
@@ -180,7 +183,13 @@ def main():
 
         nodes.append(new_paths)
 
-    find_best_solution(nodes, activities)
+    npv_next_stages = find_best_solution(nodes, activities)
+
+    for key in npv_next_stages:
+        print(key)
+
+    with open("test.json", "w") as f:
+        json.dump(npv_next_stages, f, indent=4)
 
 if __name__ == '__main__':
     main()
