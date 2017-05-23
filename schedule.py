@@ -132,9 +132,36 @@ def calculate_start_time(path, activities):
 def find_best_solution(nodes, activities):
 
     npv = create_npv()
+    npv_next_stages = {}
+    state_out = ''
 
-    for i in range(nodes.__len__(), 0, -1):
-        print(nodes[i-1])
+    nodes.insert(0, [])
+
+    # Beginning from the last node until the first
+    for i in range(nodes.__len__()-1, -1, -1):
+
+        for path in nodes[i]:
+            possible_paths = can_be_undone(activities, path)
+            print(path, possible_paths)
+
+            for letter in possible_paths:
+                state_out = ''.join(sorted(path + letter))
+                # print(state_out)
+
+                # For each state out we check if exists and if has a greater value
+                if path in npv_next_stages.keys():
+                    time = calculate_start_time(state_out, activities)
+                    value = npv_next_stages[path][1] + npv[letter - 65][time]
+
+                    if value > npv_next_stages[path][1]:
+                        npv_next_stages[path] = [state_out, value]
+
+                else:
+                    time = calculate_start_time(state_out, activities)
+                    value = npv_next_stages[path][1] + npv[letter - 65][time]
+                    npv_next_stages[path] = [state_out, value]
+
+    print(npv_next_stages)
 
 
 def main():
