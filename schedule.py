@@ -53,9 +53,8 @@ def create_npv():
 
     discount_factor = 0.005
     temporary_cash = list()
-    temp = list()
 
-    # for every column in list cashflow
+    # for every column in list cash flow
     for row in range(len(cashflow)):
         temp = list()
         for column in range(len(cashflow[row])):
@@ -131,40 +130,48 @@ def calculate_start_time(path, activities):
 
 
 def find_best_solution(nodes, activities):
+    pass
 
+def produce_stage_output(nodes, activities):
     npv = create_npv()
-    npv_next_stages = []
 
-    state_out = ''
-    npv_dict = {}
+    # Use of a list of dictionaries
+    result = [{}]
 
-    nodes.insert(0, [])
+    nodes.insert(0, [''])
+    j = 0  # keeping track of results dictionaries
 
     # Beginning from the last node until the first
-    for i in range(nodes.__len__()-1, -1, -1):
+    for i in range(nodes.__len__() - 2, -1, -1):
+        j += 1
+        npv_dict = {}
         for path in nodes[i]:
-            possible_paths = can_be_undone(activities, path)
-            # print(path, possible_paths)
+            modules = can_be_undone(activities, path)
+            start_time = calculate_start_time(path, activities)
+            # for each path we calculate the state out
+            for m in modules:
 
-            for letter in possible_paths:
-                state_out = ''.join(sorted(path + letter))
-                time = calculate_start_time(path, activities)
-                current_value = npv[ord(letter) - ord('A')][time]
+                state_out = ''.join(sorted(path + m))
+                current_value = npv[ord(m) - ord('A')][start_time]
+                previous_value = 0
+                if state_out in result[j-1].keys():
+                    previous_value = float(result[j-1][state_out][5])  # the Value of the previous node
 
-                # For each state out we check if exists and if has a greater value
-                if path in npv_dict.keys():
-                    value = npv_dict[state_out][5] + current_value
+                value = current_value + previous_value
+                value = round(value, 2)
 
-                    if value > npv_dict[path][5]:
-                        npv_dict[path] = [letter, time, current_value, state_out, npv_dict[state_out][5], value]
+                if path in npv_dict.keys() and value > npv_dict[path][5]:
+                    npv_dict[path] = [m, start_time, current_value, state_out, previous_value, value]
+                elif path not in npv_dict.keys():
+                    npv_dict[path] = [m, start_time, current_value, state_out, previous_value, value]
 
-                else:
-                    value = current_value
-                    npv_dict[path] = [letter, time, current_value, state_out, "No Previous Stage",  value]
+        result.append(npv_dict)
 
-        # npv_next_stages.append(npv_dict)
+    # Save the results to a json
+    with open("results.json", "w") as f:
+        json.dump(result, f, indent=4)
 
-    return npv_dict
+    return result
 
 
 def main():
@@ -183,13 +190,8 @@ def main():
 
         nodes.append(new_paths)
 
-    npv_next_stages = find_best_solution(nodes, activities)
+    results = produce_stage_output(nodes, activities)
 
-    for key in npv_next_stages:
-        print(key)
-
-    with open("test.json", "w") as f:
-        json.dump(npv_next_stages, f, indent=4)
 
 if __name__ == '__main__':
     main()
