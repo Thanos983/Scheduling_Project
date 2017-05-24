@@ -1,6 +1,7 @@
 # Creates random test cases(graphs) in order to test the IFM theory
 import random
 import string
+import json
 
 MINIMUM_NUMBER_OF_NODES = 2
 MAXIMUM_NUMBER_OF_NODES = 10  # maximum available number of nodes is 52 but we use 10 for convenience
@@ -57,7 +58,9 @@ def add_random_connections(activities):
 def main():
     activities = create_random_activities()
     add_random_connections(activities)
-    print(activities)
+
+    with open('randomCase.json', 'w') as f:
+        json.dump(activities, f)
 
 if __name__ == '__main__':
     main()

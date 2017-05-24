@@ -21,6 +21,8 @@
 from math import floor
 import json
 
+import randomTestingCases
+
 
 def open_file(file):
     """
@@ -129,8 +131,26 @@ def calculate_start_time(path, activities):
     return start_time
 
 
-def find_best_solution(nodes, activities):
-    pass
+def print_results(results):
+
+    for re in results:
+        print()
+        print("State In | Start Time | Module | Stage Value | State Out | Previous Stage Value | Current Value")
+        for d in re.keys():
+            print(d, re[d])
+
+
+def find_best_solution(results):
+    # TODO: It works correct but a problem occurs with the decimals. It may alter the results. npv array needs fix
+    best_solution = []
+    path = ''
+    for result in reversed(results):
+        if path in result.keys():
+            best_solution.append(result[path][0])  # Inserts the module that we pick
+            path = result[path][3]  # Path takes the value of the state out
+
+    print(best_solution)
+
 
 def produce_stage_output(nodes, activities):
     npv = create_npv()
@@ -175,8 +195,7 @@ def produce_stage_output(nodes, activities):
 
 
 def main():
-    # TODO: The code bellow could be inserted in a function!
-
+    # TODO: Make an option if the user wants to create a random case or use his with giving parameters
     file = 'test.txt'
     activities = open_file(file)
 
@@ -191,7 +210,8 @@ def main():
         nodes.append(new_paths)
 
     results = produce_stage_output(nodes, activities)
-
+    print_results(results)
+    find_best_solution(results)
 
 if __name__ == '__main__':
     main()
